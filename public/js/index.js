@@ -51,10 +51,10 @@ function loadcustomgame() {
   if (!getObj('customgames')) {
     setObj('customgames', [])
   }
-  var name = prompt('What should this game be named? (required)')
-  var url = prompt("What's this game's url? (required)")
-  var icon = prompt("What's this game's icon? (optional)")
-  var description = prompt("What's this game's description? (optional)")
+  var name = prompt('NAME (required)')
+  var url = prompt("URL (required)")
+  var icon = prompt("APP ICON (optional)")
+  var description = prompt("DESCRIPTION (optional)")
 
   if (!name || !url) return alert('All required fields must be filled in')
   if (name.length > 15) return alert('Game name is too long (max 30 characters)')
