@@ -5,17 +5,21 @@ const getObj = function (key) {
   return JSON.parse(localStorage.getItem(key))
 }
 
-// -------------------- POPUP MODAL WITH STARS --------------------
-function spawnStar() {
-  const star = document.createElement("div");
-  star.className = "star";
-  star.style.left = Math.random() * window.innerWidth + "px";
-  star.style.animationDuration = (Math.random() * 2 + 2) + "s";
-  document.getElementById("customModal").appendChild(star);
-  setTimeout(() => star.remove(), 4000);
+// -------------------- STARFIELD BACKGROUND --------------------
+function generateStars(num = 120) {
+  const container = document.getElementById("starfield");
+  for (let i = 0; i < num; i++) {
+    const star = document.createElement("span");
+    star.style.top = Math.random() * 100 + "%";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    container.appendChild(star);
+  }
 }
-setInterval(spawnStar, 300);
+generateStars(150);
+// --------------------------------------------------------------
 
+// -------------------- POPUP MODAL --------------------
 let modalResolve;
 function openModal(title = "Enter Details") {
   document.getElementById("modalTitle").innerText = title;
