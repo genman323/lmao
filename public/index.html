@@ -51,6 +51,87 @@
     </div>
   </body>
 
+  <!-- Custom Modal -->
+<style>
+#customModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+#customModal .modal-content {
+  background: #111;
+  color: white;
+  padding: 20px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#customModal input {
+  width: 90%;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+}
+#customModal button {
+  margin: 10px 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #4cafef;
+  color: white;
+  font-weight: bold;
+}
+#customModal button:hover {
+  background: #379ed6;
+}
+.star {
+  position: absolute;
+  width: 2px;
+  height: 50px;
+  background: white;
+  opacity: 0.7;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  from {
+    transform: translateY(-100vh) translateX(0) rotate(45deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100vh) translateX(50px) rotate(45deg);
+    opacity: 0;
+  }
+}
+</style>
+
+<div id="customModal">
+  <div class="modal-content">
+    <h2 id="modalTitle">Enter Details</h2>
+    <input type="text" id="modalName" placeholder="NAME (required)">
+    <input type="text" id="modalUrl" placeholder="URL (required)">
+    <input type="text" id="modalIcon" placeholder="APP ICON (optional)">
+    <input type="text" id="modalDesc" placeholder="DESCRIPTION (optional)">
+    <div>
+      <button id="modalSubmit">Submit</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+  
+
   <script src="./js/index.js"></script>
 
   <script type="text/javascript" async>
