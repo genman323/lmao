@@ -5,77 +5,25 @@ const getObj = function (key) {
   return JSON.parse(localStorage.getItem(key))
 }
 
-// -------------------- STARFIELD BACKGROUND --------------------
-function generateStars(num = 120) {
-  const container = document.getElementById("starfield");
-  for (let i = 0; i < num; i++) {
-    const star = document.createElement("span");
-    star.style.top = Math.random() * 100 + "%";
-    star.style.left = Math.random() * 100 + "%";
-    star.style.animationDuration = (Math.random() * 3 + 2) + "s";
-    container.appendChild(star);
-  }
-}
-generateStars(150);
-// --------------------------------------------------------------
-
-// -------------------- POPUP MODAL --------------------
-let modalResolve;
-function openModal(title = "Enter Details") {
-  document.getElementById("modalTitle").innerText = title;
-  document.getElementById("customModal").style.visibility = "visible";
-  document.getElementById("customModal").style.opacity = "1";
-
-  // clear old values
-  document.getElementById("modalName").value = "";
-  document.getElementById("modalUrl").value = "";
-  document.getElementById("modalIcon").value = "";
-  document.getElementById("modalDesc").value = "";
-
-  return new Promise((resolve) => {
-    modalResolve = resolve;
-  });
-}
-function closeModal() {
-  document.getElementById("customModal").style.opacity = "0";
-  document.getElementById("customModal").style.visibility = "hidden";
-  if (modalResolve) modalResolve(null);
-}
-document.getElementById("modalSubmit").onclick = () => {
-  const result = {
-    name: document.getElementById("modalName").value.trim(),
-    url: document.getElementById("modalUrl").value.trim(),
-    icon: document.getElementById("modalIcon").value.trim(),
-    description: document.getElementById("modalDesc").value.trim()
-  };
-  closeModal();
-  modalResolve(result);
-};
-// ---------------------------------------------------------------
-
-async function loadcustomapp() {
+function loadcustomapp() {
   if (!getObj('customapps')) {
     setObj('customapps', [])
   }
+  var name = prompt('What should this app be named? (required)')
+  var url = prompt("What's this app's url? (required)")
+  var icon = prompt("What's this app's icon? (optional)")
+  var description = prompt("What's this app's description? (optional)")
 
-  const result = await openModal("Add Custom App");
-
-  if (!result || !result.name || !result.url) return alert('All required fields must be filled in');
-  if (result.name.length > 15) return alert('App name is too long (max 30 characters)');
+  if (!name || !url) return alert('All required fields must be filled in')
+  if (name.length > 15) return alert('App name is too long (max 30 characters)')
 
   fetch('https://www.uuidtools.com/api/generate/v4')
     .then((response) => response.json())
     .then((data) => {
       var customapps = getObj('customapps') || []
-      customapps.push({
-        title: `${result.name} (Custom app)`,
-        url: result.url,
-        id: data[0],
-        image: result.icon,
-        description: result.description
-      });
-      setObj('customapps', customapps);
-      window.location.href = self.location;
+      customapps.push(JSON.parse(`{ "title": "${name} (Custom app)", "url": "${url}", "id": "${data[0]}", "image": "${icon}", "description": "${description}" }`))
+      setObj('customapps', customapps)
+      window.location.href = self.location
     })
 }
 
@@ -99,28 +47,26 @@ function launchab() {
 
 if (window.self !== window.self) document.querySelector('#launchab').style.display = 'none'
 
-async function loadcustomgame() {
+function loadcustomgame() {
   if (!getObj('customgames')) {
     setObj('customgames', [])
   }
+  var name = prompt('What should this game be named? (required)')
+  var url = prompt("What's this game's url? (required)")
+  var icon = prompt("What's this game's icon? (optional)")
+  var description = prompt("What's this game's description? (optional)")
 
-  const result = await openModal("Add Custom Game");
-
-  if (!result || !result.name || !result.url) return alert('All required fields must be filled in');
-  if (result.name.length > 15) return alert('Game name is too long (max 30 characters)');
+  if (!name || !url) return alert('All required fields must be filled in')
+  if (name.length > 15) return alert('Game name is too long (max 30 characters)')
 
   fetch('https://www.uuidtools.com/api/generate/v4')
     .then((response) => response.json())
     .then((data) => {
       var customgames = getObj('customgames') || []
-      customgames.push({
-        title: `${result.name} (Custom game)`,
-        url: result.url,
-        id: data[0],
-        image: result.icon,
-        description: result.description
-      });
-      setObj('customgames', customgames);
+      customgames.push(JSON.parse(`{ "title": "${name} (Custom game)", "url": "${url}", "id": "${data[0]}", "image": "${icon}", "description": "${description}" }`))
+      console.log(customgames)
+      setObj('customgames', customgames)
+
       console.log(getObj('customgames'))
       //window.location.href = self.location
     })
