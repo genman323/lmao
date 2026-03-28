@@ -54,7 +54,7 @@
       }
     </style>
   </head>
-  <body theme="main" style="display: none;">
+  <body theme="main">
     <nav>
       <div class="logo">
         <img src="./assets/images/icon.png" alt="Logo" draggable="false" />
@@ -107,12 +107,10 @@
     const overlay = document.getElementById('password-overlay');
     const input = document.getElementById('password-input');
     const errorMsg = document.getElementById('error-msg');
-    const body = document.body;
 
     function checkPassword() {
       if (input.value === CORRECT_PASSWORD) {
         overlay.style.display = 'none';
-        body.style.display = 'block';
       } else {
         errorMsg.textContent = "Incorrect password";
         input.value = "";
