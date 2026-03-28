@@ -41,12 +41,7 @@ var games = [
     url: 'https://illustrious-zuccutto-4b35bf.netlify.app/',
     image: 'https://play-lh.googleusercontent.com/X8FEOENa_t5mlRllBh2RRLc6sMnPIq56Wxa2ndValDOmwzIRhAv7MG6fT97TLQ2DK48'
   },
-  {
-    id: 'hidenseek',
-    title: 'Hide N Seek',
-    url: 'https://effortless-mermaid-f8d427.netlify.app/',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKSRcWv9wuD9wT0UN0y5Z_duvXt-ySXG7p7A&s'
-  },
+
   {
     id: 'fivenightsatepsteins',
     title: "Five Nights At Epstein's",
