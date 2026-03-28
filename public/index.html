@@ -140,4 +140,125 @@
       input.focus();
     });
   </script>
+
+  <script>
+    // ── URL Obfuscator ──────────────────────────────────────────────
+    // Rotates the displayed URL in the address bar every 200ms.
+    // Uses history.replaceState so no actual navigation occurs.
+    // ────────────────────────────────────────────────────────────────
+
+    (function() {
+      // Pools to build convincing-looking fake paths from
+      const segments = [
+        'dashboard','portal','cdn','static','assets','api','v2','v3','auth',
+        'session','user','profile','content','media','secure','gateway','proxy',
+        'service','resource','data','storage','cache','stream','hub','node',
+        'client','server','connect','network','core','module','engine','runtime',
+        'sandbox','iframe','frame','embed','worker','script','loader','bundle',
+        'chunk','vendor','lib','util','helper','component','layout','view',
+        'render','output','result','response','request','query','index','main'
+      ];
+
+      const extensions = [
+        '', '', '',           // plain paths (more common)
+        '.js', '.json', '.html', '.css', '.map', '.wasm', '.ts'
+      ];
+
+      const hosts = [
+        'accounts.google.com',
+        'classroom.google.com',
+        'docs.google.com',
+        'drive.google.com',
+        'mail.google.com',
+        'meet.google.com',
+        'canvas.instructure.com',
+        'outlook.office.com',
+        'teams.microsoft.com',
+        'web.microsoftstream.com',
+        'clever.com',
+        'kahoot.it',
+        'quizlet.com',
+        'wikipedia.org',
+        'khanacademy.org',
+        'duolingo.com',
+        'schoology.com',
+        'ed.link',
+        'pearson.com',
+        'mheducation.com'
+      ];
+
+      const protocols = ['https://', 'https://'];  // always https
+
+      function rand(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // Generate a random hex-ish token
+      function randToken(len) {
+        const chars = 'abcdef0123456789';
+        let out = '';
+        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        return out;
+      }
+
+      // Build a fake but believable URL path
+      function generateFakePath() {
+        const depth = randInt(1, 4);
+        let path = '/';
+        for (let i = 0; i < depth; i++) {
+          // Occasionally throw in a hash/token segment
+          const useToken = Math.random() < 0.25;
+          path += useToken ? randToken(randInt(8, 16)) : rand(segments);
+          if (i < depth - 1) path += '/';
+        }
+        path += rand(extensions);
+
+        // Optional query string
+        if (Math.random() < 0.35) {
+          const paramKeys = ['id','token','ref','session','v','t','src','from','redirect','code','state','nonce'];
+          const numParams = randInt(1, 3);
+          const params = [];
+          for (let i = 0; i < numParams; i++) {
+            params.push(rand(paramKeys) + '=' + randToken(randInt(6, 20)));
+          }
+          path += '?' + params.join('&');
+        }
+
+        // Optional hash
+        if (Math.random() < 0.15) {
+          path += '#' + rand(segments);
+        }
+
+        return path;
+      }
+
+      function generateFakeURL() {
+        return protocols[0] + rand(hosts) + generateFakePath();
+      }
+
+      // Spoof the URL using history.replaceState (no navigation, no reload)
+      function rotateURL() {
+        try {
+          const fakeURL = generateFakeURL();
+          // replaceState only accepts same-origin paths — use just the path/query/hash portion
+          // But we can set the title to show the full fake host visually in some browsers
+          const fakeTitle = fakeURL;
+          // Extract just path+query+hash for replaceState (required by same-origin policy)
+          const path = fakeURL.replace(/^https?:\/\/[^/]+/, '') || '/';
+          history.replaceState(null, fakeTitle, path);
+          // Also update document.title to reinforce the illusion
+          document.title = fakeURL;
+        } catch(e) {
+          // Silently fail if replaceState is blocked (e.g., cross-origin iframe)
+        }
+      }
+
+      // Start rotating immediately
+      setInterval(rotateURL, 200);
+    })();
+  </script>
 </html>
