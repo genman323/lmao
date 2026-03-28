@@ -543,7 +543,60 @@
         padding-top: 56px !important;
       }
 
-    </style>
+    
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+      }
+
+      body {
+        padding-top: 56px !important;
+        display: block !important;
+        position: static !important;
+      }
+
+      .center-container, .gamecontainer, .cardgroup, h1, .input, button.secondary {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+      }
+
+      .links {
+        position: fixed !important;
+        bottom: 18px !important;
+        left: 0 !important;
+        right: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0 28px !important;
+        z-index: 50 !important;
+        pointer-events: none !important;
+      }
+
+      .links .left, .links .right {
+        display: flex !important;
+        gap: 18px !important;
+        pointer-events: all !important;
+      }
+
+      .links a {
+        color: rgba(255,255,255,0.2) !important;
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 11px !important;
+        letter-spacing: 0.06em !important;
+        text-decoration: none !important;
+        transition: color 0.2s !important;
+      }
+
+      .links a:hover {
+        color: rgba(255,255,255,0.6) !important;
+      }
+</style>
   </head>
   <body theme="main">
     <canvas id="vd-bg-canvas"></canvas>
