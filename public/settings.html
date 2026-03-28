@@ -1,31 +1,178 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link
-      rel="shortcut icon"
-      href="./assets/images/icon.png"
-      type="image/png"
-    />
+    <link rel="shortcut icon" href="./assets/images/icon.png" type="image/png" />
     <title>VirtualDesktopz</title>
-
     <link rel="stylesheet" href="./css/master.css" />
-
     <script src="/uv/uv.bundle.js" charset="UTF-8"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="./js/preload.js"></script>
-
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-  </head>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
 
+      html, body {
+        background: #000 !important;
+        color: #fff;
+        font-family: 'Syne', sans-serif;
+      }
+
+      #vd-bg-canvas {
+        position: fixed; inset: 0;
+        width: 100%; height: 100%;
+        z-index: 0; pointer-events: none; opacity: 0.55;
+      }
+      #vd-bg-grid {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+      #vd-bg-vignette {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.85) 90%);
+      }
+      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette) {
+        position: relative; z-index: 1;
+      }
+
+      .center-container {
+        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        animation-delay: 0.05s;
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 32px 24px 60px;
+      }
+
+      .center-container > h1 {
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: #fff;
+        text-shadow: 0 0 40px rgba(255,255,255,0.18);
+        margin-bottom: 36px;
+        text-align: center;
+      }
+
+      .center-container h2 {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.35);
+        margin: 32px 0 14px;
+        font-family: 'JetBrains Mono', monospace;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding-bottom: 10px;
+      }
+
+      .center-container h4 {
+        font-size: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        color: rgba(255,255,255,0.28);
+        line-height: 1.6;
+        margin-bottom: 14px;
+        font-weight: 400;
+      }
+
+      .center-container input[type="text"] {
+        width: 100%;
+        padding: 13px 16px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        outline: none;
+        margin-bottom: 10px;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      }
+      .center-container input[type="text"]::placeholder { color: rgba(255,255,255,0.2); }
+      .center-container input[type="text"]:focus {
+        border-color: rgba(255,255,255,0.28);
+        background: rgba(255,255,255,0.07);
+        box-shadow: 0 0 16px rgba(255,255,255,0.04);
+      }
+
+      button.secondary {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 9px;
+        color: rgba(255,255,255,0.55);
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-bottom: 10px;
+        margin-right: 8px;
+        transition: border-color 0.2s, color 0.2s, background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        vertical-align: middle;
+      }
+      button.secondary img {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        object-fit: contain;
+      }
+      button.secondary:hover {
+        border-color: rgba(255,255,255,0.32);
+        color: rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.05);
+      }
+
+      select#theme-select {
+        width: 100%;
+        padding: 13px 16px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+      }
+      select#theme-select:focus {
+        border-color: rgba(255,255,255,0.28);
+      }
+      select#theme-select option {
+        background: #111;
+        color: #fff;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
   <body>
+    <canvas id="vd-bg-canvas"></canvas>
+    <div id="vd-bg-grid"></div>
+    <div id="vd-bg-vignette"></div>
+
     <nav>
       <div class="logo">
         <img src="./assets/images/icon.png" alt="Logo" draggable="false" />
         <h1>VirtualDesktopz</h1>
       </div>
-
       <p id="time"></p>
-
       <div class="navitems">
         <div class="navitem"><a href="/">Home</a></div>
         <div class="navitem"><a href="/gs.html">Games</a></div>
@@ -38,37 +185,28 @@
     <div class="center-container">
       <h1>Settings</h1>
 
-      <h2>Tab cloaking</h2>
+      <h2>Tab Cloaking</h2>
       <input type="text" id="tabname" placeholder="Tab name" />
-      <button onclick="setTab()" class="secondary">Set tab name</button> <br />
-      <input type="text" id="tabicon" placeholder="Tab icon" />
-      <button onclick="setTab()" class="secondary">Set tab icon</button> <br />
-
+      <button onclick="setTab()" class="secondary">Set tab name</button>
+      <br />
+      <input type="text" id="tabicon" placeholder="Tab icon URL" />
+      <button onclick="setTab()" class="secondary">Set tab icon</button>
+      <br />
       <button class="secondary" onclick="setTabPreset('default')">
-        <img src="/assets/images/icon.png" />
+        <img src="/assets/images/icon.png" /> Default
       </button>
       <button class="secondary" onclick="setTabPreset('google')">
-        <img
-          src="https://static-00.iconduck.com/assets.00/google-icon-2048x2048-czn3g8x8.png"
-        />
+        <img src="https://static-00.iconduck.com/assets.00/google-icon-2048x2048-czn3g8x8.png" /> Google
       </button>
       <button class="secondary" onclick="setTabPreset('drive')">
-        <img
-          src="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png"
-        />
+        <img src="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" /> Drive
       </button>
       <button class="secondary" onclick="setTabPreset('docs')">
-        <img
-          src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico"
-        />
+        <img src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" /> Docs
       </button>
       <button class="secondary" onclick="setTabPreset('classroom')">
-        <img
-          src="https://ssl.gstatic.com/classroom/ic_product_classroom_32.png"
-        />
+        <img src="https://ssl.gstatic.com/classroom/ic_product_classroom_32.png" /> Classroom
       </button>
-
-      <br /><br />
 
       <h2>Themes</h2>
       <select id="theme-select">
@@ -84,36 +222,62 @@
         <option value="beach">Beach</option>
         <option value="murica">Murica'</option>
         <option value="modern">Modern</option>
-
-        <!-- add more options for other themes -->
       </select>
 
-      <br /><br />
-
       <h2>Panic Key</h2>
-      <h4>
-        WARNING: Panic keys trigger whenever you click that key whenever you
-        click it, including typing on this page, so set it to a key you don't
-        click often.
-      </h4>
+      <h4>WARNING: Panic keys trigger whenever you click that key, including while typing on this page. Set it to a key you don't press often.</h4>
       <input type="text" id="panickey" placeholder="Panic key" />
       <button onclick="setPanicKey()" class="secondary">Set panic key</button>
       <br />
-      <input type="text" id="panicurl" placeholder="Panic url" />
-      <button onclick="setPanicUrl()" class="secondary">Set panic url</button>
+      <input type="text" id="panicurl" placeholder="Panic URL" />
+      <button onclick="setPanicUrl()" class="secondary">Set panic URL</button>
       <br />
-      <button onclick="detectPanic()" id="panickeybtn" class="secondary">
-        Auto-detect panic key
-      </button>
+      <button onclick="detectPanic()" id="panickeybtn" class="secondary">Auto-detect panic key</button>
     </div>
+
+    <script src="./js/index.js"></script>
+    <script src="./js/settings.js"></script>
+
+    <script type="text/javascript">
+      aclib.runAutoTag({ zoneId: '6hmeyutild' });
+    </script>
+
+    <script>
+    (function() {
+      const canvas = document.getElementById('vd-bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let W = canvas.width = window.innerWidth;
+      let H = canvas.height = window.innerHeight;
+      window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+      const particles = Array.from({ length: 60 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.4 + 0.3,
+        dx: (Math.random() - 0.5) * 0.22, dy: (Math.random() - 0.5) * 0.22,
+        alpha: Math.random() * 0.35 + 0.05
+      }));
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`; ctx.fill();
+          p.x += p.dx; p.y += p.dy;
+          if (p.x < 0 || p.x > W) p.dx *= -1;
+          if (p.y < 0 || p.y > H) p.dy *= -1;
+        });
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 110) {
+              ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(255,255,255,${0.07*(1-dist/110)})`; ctx.lineWidth = 0.7; ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+    </script>
   </body>
-
-  <script src="./js/index.js"></script>
-  <script src="./js/settings.js"></script>
-
-  <script type="text/javascript">
-      aclib.runAutoTag({
-          zoneId: '6hmeyutild',
-      });
-  </script>
 </html>
