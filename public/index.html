@@ -23,6 +23,7 @@
         background: #000;
         overflow: hidden;
         font-family: 'Syne', sans-serif;
+        isolation: isolate;
       }
 
       #pw-canvas {
@@ -492,25 +493,6 @@
       }
 
     
-      .center-container {
-        position: static !important;
-        left: auto !important;
-        right: auto !important;
-        top: auto !important;
-        bottom: auto !important;
-        transform: none !important;
-        margin: 0 auto !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-height: calc(100vh - 60px) !important;
-        text-align: center !important;
-        padding: 40px 24px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-
     </style>
   </head>
   <body theme="main">
@@ -604,6 +586,14 @@
   </body>
   
   <script src="./js/index.js"></script>
+  <script>
+    (function() {
+      const ov = document.getElementById('password-overlay');
+      if (ov) {
+        document.documentElement.appendChild(ov);
+      }
+    })();
+  </script>
   <script type="text/javascript" async>
     aclib.runAutoTag({ zoneId: '6hmeyutild' });
   </script>
