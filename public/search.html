@@ -38,77 +38,47 @@
         position: relative; z-index: 1;
       }
 
-      h1 {
+      .center-container {
+        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        animation-delay: 0.05s;
+      }
+
+      .center-container h1 {
         font-size: 42px;
         font-weight: 800;
         letter-spacing: -0.03em;
         color: #fff;
-        text-shadow: 0 0 40px rgba(255,255,255,0.15);
-        text-align: center;
-        margin: 32px 0 18px;
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        text-shadow: 0 0 40px rgba(255,255,255,0.18);
+        margin-bottom: 24px;
       }
 
-      .input {
-        display: block;
-        margin: 0 auto 28px;
-        padding: 13px 20px;
-        width: min(400px, 90%);
+      .pxyinput {
+        width: min(520px, 90%);
+        padding: 16px 22px;
         background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
+        border-radius: 14px;
         color: #fff;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        letter-spacing: 0.04em;
+        font-size: 15px;
+        letter-spacing: 0.03em;
         outline: none;
         transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.08s;
-      }
-      .input::placeholder { color: rgba(255,255,255,0.2); }
-      .input:focus {
-        border-color: rgba(255,255,255,0.3);
-        background: rgba(255,255,255,0.08);
-        box-shadow: 0 0 20px rgba(255,255,255,0.05);
-      }
-
-      .cardgroup {
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.14s;
-      }
-
-      .card {
-        background: rgba(255,255,255,0.04) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 14px !important;
-        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important;
-      }
-      .card:hover {
-        transform: translateY(-3px) !important;
-        border-color: rgba(255,255,255,0.18) !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.04) !important;
-      }
-
-      button.secondary {
         display: block;
-        margin: 24px auto;
-        padding: 11px 28px;
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 10px;
-        color: rgba(255,255,255,0.5);
-        font-family: 'Syne', sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: border-color 0.2s, color 0.2s;
+        margin: 0 auto;
       }
-      button.secondary:hover {
-        border-color: rgba(255,255,255,0.35);
-        color: rgba(255,255,255,0.9);
+      .pxyinput::placeholder { color: rgba(255,255,255,0.2); }
+      .pxyinput:focus {
+        border-color: rgba(255,255,255,0.32);
+        background: rgba(255,255,255,0.08);
+        box-shadow: 0 0 28px rgba(255,255,255,0.06);
+      }
+
+      .frame {
+        border: 1px solid rgba(255,255,255,0.07) !important;
+        border-radius: 14px;
+        box-shadow: 0 0 40px rgba(255,255,255,0.03), 0 20px 60px rgba(0,0,0,0.5);
+        margin-top: 20px;
       }
 
       @keyframes fadeUp {
@@ -117,7 +87,7 @@
       }
     </style>
   </head>
-  <body>
+  <body theme="main">
     <canvas id="vd-bg-canvas"></canvas>
     <div id="vd-bg-grid"></div>
     <div id="vd-bg-vignette"></div>
@@ -129,34 +99,22 @@
       </div>
       <p id="time"></p>
       <div class="navitems">
-        <div class="navitem"><a href="/">Home</a></div>
+        <div class="navitem"><a href="/index.html">Home</a></div>
         <div class="navitem"><a href="/gs.html">Games</a></div>
-        <div class="navitem"><a selected href="/apps.html">Apps</a></div>
+        <div class="navitem"><a href="/apps.html">Apps</a></div>
         <div class="navitem"><a href="/emulator.html">Emulator</a></div>
-        <div class="navitem"><a href="/search.html">Search</a></div>
+        <div class="navitem"><a selected href="/search.html">Search</a></div>
       </div>
     </nav>
 
-    <h1>Apps</h1>
-    <input type="text" class="input" id="search" placeholder="Search Apps" style="text-align: center" />
-    <div class="cardgroup" id="appcards"></div>
-    <button class="secondary" onclick="clearcustomapps()">Clear custom apps</button>
+    <div class="center-container">
+      <h1>Search</h1>
+      <input class="pxyinput" type="text" placeholder="Search..." />
+    </div>
+    <iframe class="frame"></iframe>
 
     <script src="./js/index.js"></script>
-    <script src="./assets/data/apps.js"></script>
-    <script src="./js/apps.js"></script>
-
-    <script>
-      const searchInput = document.querySelector('#search');
-      const items = document.querySelectorAll('.card');
-      searchInput.addEventListener('input', function(event) {
-        const query = event.target.value.toLowerCase();
-        items.forEach(function(item) {
-          const title = item.querySelector('.card h4').textContent.toLowerCase();
-          item.style.display = title.includes(query) ? 'block' : 'none';
-        });
-      });
-    </script>
+    <script src="./js/search.js"></script>
 
     <script type="text/javascript">
       aclib.runAutoTag({ zoneId: '6hmeyutild' });
