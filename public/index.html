@@ -3,25 +3,64 @@
   <head>
     <link rel="shortcut icon" href="./assets/images/icon.png" type="image/png" />
     <title>VirtualDesktopz</title>
-
     <link rel="stylesheet" href="./css/master.css" />
-
     <script src="/uv/uv.bundle.js" charset="UTF-8"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="./js/preload.js"></script>
-
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+    
+    <style>
+      #password-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      #password-box {
+        background: #111;
+        padding: 40px 50px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      }
+      #password-box h2 {
+        color: #fff;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      #password-input {
+        width: 280px;
+        padding: 14px;
+        font-size: 18px;
+        background: #222;
+        color: #fff;
+        border: 2px solid #444;
+        border-radius: 8px;
+        text-align: center;
+        outline: none;
+      }
+      #password-input:focus {
+        border-color: #666;
+      }
+      #error-msg {
+        color: #ff4444;
+        margin-top: 15px;
+        font-size: 14px;
+        min-height: 20px;
+      }
+    </style>
   </head>
-
-  <body theme="main">
+  <body theme="main" style="display: none;">
     <nav>
       <div class="logo">
         <img src="./assets/images/icon.png" alt="Logo" draggable="false" />
         <h1>VirtualDesktopz</h1>
       </div>
-
       <p id="time"></p>
-
       <div class="navitems">
         <div class="navitem"><a selected href="/">Home</a></div>
         <div class="navitem"><a href="/gs.html">Games</a></div>
@@ -30,32 +69,66 @@
         <div class="navitem"><a href="/search.html">Search</a></div>
       </div>
     </nav>
-
     <div class="center-container">
-      <h1>Welcome to <span>VirtualDesktopz made by 712</span></h1>
+      <h1>Welcome to <span>VirtualDesktopz made by serenitty</span></h1>
       <br />
       <button onclick="window.location.href='/search.html?q= 8rjfke'" class="button play">--</button>
       <button onclick="launchab()" id="launchab" class="button play">Launch in about:blank</button>
     </div>
-
     <div class="links">
       <div class="left">
         <a href="https://www.google.com/search?q=thankk+for+use+virtualdesktopz+made+by+%40712themodder+on+discordd&oq=thankk+for+use+virtualdesktopz+made+by+%40712themodder+on+discordd&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRiPAjIHCAIQIRiPAjIHCAMQIRiPAtIBBzE4N2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8">cow-go-meow</a>
         <a href="https://www.google.com/search?q=thankk+for+use+virtualdesktopz+made+by+%40712themodder+on+discordd&oq=thankk+for+use+virtualdesktopz+made+by+%40712themodder+on+discordd&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRiPAjIHCAIQIRiPAjIHCAMQIRiPAtIBBzE4N2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8">cow-go-meow</a>
       </div>
-
       <div class="right">
         <a href="./settings.html">Settings</a>
         <a href="./about.html">About</a>
       </div>
     </div>
+
+    <div id="password-overlay">
+      <div id="password-box">
+        <h2>Enter Password</h2>
+        <input type="password" id="password-input" placeholder="Password" autofocus>
+        <div id="error-msg"></div>
+      </div>
+    </div>
+
   </body>
-
+  
   <script src="./js/index.js"></script>
-
   <script type="text/javascript" async>
-    aclib.runAutoTag({
-        zoneId: '6hmeyutild',
-    })
+    aclib.runAutoTag({ zoneId: '6hmeyutild' });
+  </script>
+
+  <script>
+    const CORRECT_PASSWORD = "serenittypremium";
+
+    const overlay = document.getElementById('password-overlay');
+    const input = document.getElementById('password-input');
+    const errorMsg = document.getElementById('error-msg');
+    const body = document.body;
+
+    function checkPassword() {
+      if (input.value === CORRECT_PASSWORD) {
+        overlay.style.display = 'none';
+        body.style.display = 'block';
+      } else {
+        errorMsg.textContent = "Incorrect password";
+        input.value = "";
+        input.focus();
+        setTimeout(() => { errorMsg.textContent = ""; }, 2000);
+      }
+    }
+
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+
+    window.addEventListener('load', () => {
+      input.focus();
+    });
   </script>
 </html>
