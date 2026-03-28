@@ -22,23 +22,32 @@
       }
       #password-box {
         background: #0a0a0a;
-        padding: 50px 60px;
+        padding: 40px 50px;
+        border-radius: 16px;
         text-align: center;
         border: 1px solid #1a1a1a;
+        max-width: 340px;
+      }
+      #logo {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 25px;
+        border-radius: 20px;
       }
       #password-box h2 {
         color: #ffffff;
-        margin-bottom: 25px;
-        font-size: 26px;
+        margin-bottom: 20px;
+        font-size: 24px;
         letter-spacing: 1px;
       }
       #password-input {
-        width: 300px;
-        padding: 16px;
-        font-size: 20px;
+        width: 240px;
+        padding: 14px;
+        font-size: 18px;
         background: #111111;
         color: #ffffff;
         border: 2px solid #222222;
+        border-radius: 10px;
         text-align: center;
         outline: none;
         font-family: monospace;
@@ -48,16 +57,9 @@
       }
       #error-msg {
         color: #ff3333;
-        margin-top: 18px;
-        font-size: 15px;
-        min-height: 22px;
-      }
-      .dots {
-        display: inline-block;
-        color: #555;
-        font-size: 18px;
-        letter-spacing: 4px;
-        animation: fadeDots 0.2s infinite alternate;
+        margin-top: 15px;
+        font-size: 14px;
+        min-height: 20px;
       }
     </style>
   </head>
@@ -95,6 +97,7 @@
 
     <div id="password-overlay">
       <div id="password-box">
+        <img id="logo" src="https://github.com/genman323/lmao/blob/main/public/assets/images/icon.png" alt="Logo">
         <h2>Enter Password</h2>
         <input type="password" id="password-input" placeholder="Password" autofocus>
         <div id="error-msg"></div>
