@@ -202,7 +202,7 @@
         const depth = randInt(1, 4);
         let path = '/';
         for (let i = 0; i < depth; i++) {
-          const useToken = Math.random() < 0.25;
+          const useToken = Math.random() < 0.05;
           path += useToken ? randToken(randInt(8, 16)) : rand(segments);
           if (i < depth - 1) path += '/';
         }
