@@ -14,14 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
-
       html, body {
         background: #000 !important;
         color: #fff;
         font-family: 'Syne', sans-serif;
         margin: 0; padding: 0;
       }
-
       #vd-bg-canvas {
         position: fixed; inset: 0;
         width: 100%; height: 100%;
@@ -41,7 +39,6 @@
       body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette):not(#vd-auth-overlay):not(#vd-devtools-wall) {
         position: relative; z-index: 1;
       }
-
       /* ── NAV ── */
       nav {
         background: rgba(0,0,0,0.65) !important;
@@ -81,7 +78,6 @@
         font-weight: 700 !important;
         box-shadow: 0 0 20px rgba(255,255,255,0.18) !important;
       }
-
       /* ── HOME HERO ── */
       .hero {
         display: flex; flex-direction: column;
@@ -121,7 +117,6 @@
         max-width: 440px; margin: 0 auto 40px;
       }
       .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-
       .btn-primary {
         padding: 14px 32px;
         background: #fff; color: #000;
@@ -144,7 +139,6 @@
       .btn-primary:hover::before { left: 160%; }
       .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(255,255,255,0.22), 0 8px 28px rgba(0,0,0,0.5); }
       .btn-primary:active { transform: translateY(0); }
-
       .btn-ghost {
         padding: 13px 28px;
         background: transparent; color: rgba(255,255,255,0.6);
@@ -155,7 +149,6 @@
         text-decoration: none; display: inline-block;
       }
       .btn-ghost:hover { border-color: rgba(255,255,255,0.36); color: #fff; background: rgba(255,255,255,0.05); }
-
       /* ── FEATURE ROW ── */
       .feature-row {
         display: grid;
@@ -202,7 +195,6 @@
         font-family: 'JetBrains Mono', monospace;
         line-height: 1.6; margin: 0;
       }
-
       /* ── LINKS ── */
       .links {
         display: flex; justify-content: space-between;
@@ -218,10 +210,9 @@
         text-decoration: none; transition: color 0.2s;
       }
       .links a:hover { color: rgba(255,255,255,0.65) !important; }
-
       @keyframes fadeUp {
         from { opacity: 0; transform: translateY(20px); }
-        to   { opacity: 1; transform: translateY(0); }
+        to { opacity: 1; transform: translateY(0); }
       }
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
@@ -233,7 +224,6 @@
     <canvas id="vd-bg-canvas"></canvas>
     <div id="vd-bg-grid"></div>
     <div id="vd-bg-vignette"></div>
-
     <nav>
       <div class="logo">
         <img src="./assets/images/icon.png" alt="Logo" draggable="false" />
@@ -248,7 +238,6 @@
         <div class="navitem"><a href="/search.html">Search</a></div>
       </div>
     </nav>
-
     <div class="hero">
       <p class="hero-eyebrow">Welcome to</p>
       <h1>VirtualDesktopz<br><span>by serenitty</span></h1>
@@ -258,7 +247,6 @@
         <button onclick="launchab()" class="btn-ghost">Launch about:blank</button>
       </div>
     </div>
-
     <div class="feature-row">
       <a href="/gs.html" class="feature-card">
         <div class="feature-icon">🎮</div>
@@ -281,7 +269,6 @@
         <p>Proxied browser search</p>
       </a>
     </div>
-
     <div class="links" style="margin-top:40px;">
       <div>
         <a href="https://www.google.com/search?q=orange+juice">cow-go-meow</a>
@@ -292,7 +279,6 @@
         <a href="./about.html">About</a>
       </div>
     </div>
-
     <script src="./js/index.js"></script>
     <script type="text/javascript">
       aclib.runAutoTag({ zoneId: '6hmeyutild' });
