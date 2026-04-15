@@ -1,111 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="./assets/images/icon.png" type="image/png" />
-    <title>VirtualDesktopz</title>
+    <title>VirtualDesktopz — Emulator</title>
     <link rel="stylesheet" href="./css/master.css" />
     <script src="/uv/uv.bundle.js" charset="UTF-8"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="./js/preload.js"></script>
+    <script src="./js/auth.js"></script>
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
+      html, body { background: #000 !important; color: #fff; font-family: 'Syne', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+      #vd-bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.55; }
+      #vd-bg-grid { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 48px 48px; }
+      #vd-bg-vignette { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.88) 90%); }
+      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette):not(#vd-auth-overlay):not(#vd-devtools-wall) { position: relative; z-index: 1; }
 
-      html, body {
-        background: #000 !important;
-        color: #fff;
-        font-family: 'Syne', sans-serif;
-      }
+      nav { background: rgba(0,0,0,0.65) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; display: flex; align-items: center; padding: 0 24px; height: 58px; gap: 20px; }
+      nav .logo { display: flex; align-items: center; gap: 10px; }
+      nav .logo img { width: 26px; height: 26px; border-radius: 7px; }
+      nav .logo h1 { color: #fff !important; font-size: 15px !important; font-weight: 800 !important; margin: 0; }
+      nav #time { font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.28); font-size: 12px; margin: 0; margin-left: auto; }
+      nav .navitems { display: flex; align-items: center; gap: 2px; }
+      nav .navitem a { color: rgba(255,255,255,0.45) !important; text-decoration: none !important; font-family: 'Syne', sans-serif !important; font-weight: 600 !important; font-size: 13px !important; padding: 7px 14px !important; border-radius: 9px !important; transition: color 0.18s, background 0.18s !important; background: transparent !important; display: block !important; }
+      nav .navitem a:hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
+      nav .navitem a[selected] { color: #000 !important; background: #fff !important; font-weight: 700 !important; box-shadow: 0 0 20px rgba(255,255,255,0.18) !important; }
 
-      #vd-bg-canvas {
-        position: fixed; inset: 0;
-        width: 100%; height: 100%;
-        z-index: 0; pointer-events: none; opacity: 0.55;
-      }
-      #vd-bg-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image:
-          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-        background-size: 48px 48px;
-      }
-      #vd-bg-vignette {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.85) 90%);
-      }
-      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette) {
-        position: relative; z-index: 1;
-      }
-
-      .frame {
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 14px;
-        box-shadow: 0 0 40px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.6);
+      .emu-wrap {
+        padding: 24px;
+        display: flex; flex-direction: column;
+        align-items: center; gap: 0;
+        min-height: calc(100vh - 58px);
         animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.1s;
-        overflow: hidden;
+        animation-delay: 0.08s;
+      }
+      .frame {
+        width: 100%; max-width: 1100px;
+        height: calc(100vh - 58px - 48px);
+        min-height: 520px;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 16px;
+        box-shadow: 0 0 40px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.7);
+        overflow: hidden; display: block;
       }
 
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(18px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-    
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 99px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
-      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.25) transparent; }
-
-      nav {
-        background: rgba(0,0,0,0.6) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-bottom: 1px solid rgba(255,255,255,0.07) !important;
-      }
-
-      nav .logo h1 {
-        color: #fff !important;
-        font-size: 15px !important;
-        font-weight: 800 !important;
-      }
-
-      nav .logo img {
-        border-radius: 6px !important;
-      }
-
-      nav #time {
-        font-family: 'JetBrains Mono', monospace !important;
-        color: rgba(255,255,255,0.3) !important;
-        font-size: 12px !important;
-      }
-
-      nav .navitem a {
-        color: rgba(255,255,255,0.45) !important;
-        text-decoration: none !important;
-        font-family: 'Syne', sans-serif !important;
-        font-weight: 600 !important;
-        font-size: 13px !important;
-        padding: 6px 13px !important;
-        border-radius: 8px !important;
-        transition: color 0.18s, background 0.18s !important;
-        background: transparent !important;
-        display: block !important;
-      }
-
-      nav .navitem a:hover {
-        color: #fff !important;
-        background: rgba(255,255,255,0.08) !important;
-      }
-
-      nav .navitem a[selected] {
-        color: #000 !important;
-        background: #fff !important;
-        font-weight: 700 !important;
-        box-shadow: 0 0 18px rgba(255,255,255,0.2) !important;
-      }
-
+      @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+      ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:99px;}
+      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; }
     </style>
   </head>
   <body>
@@ -128,7 +73,9 @@
       </div>
     </nav>
 
-    <iframe class="frame"></iframe>
+    <div class="emu-wrap">
+      <iframe class="frame" allowfullscreen frameborder="0"></iframe>
+    </div>
 
     <script>
       document.querySelector('.frame').src =
@@ -136,46 +83,9 @@
     </script>
 
     <script src="./js/index.js"></script>
-    <script type="text/javascript">
-      aclib.runAutoTag({ zoneId: '6hmeyutild' });
-    </script>
-
+    <script type="text/javascript"> aclib.runAutoTag({ zoneId: '6hmeyutild' }); </script>
     <script>
-    (function() {
-      const canvas = document.getElementById('vd-bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let W = canvas.width = window.innerWidth;
-      let H = canvas.height = window.innerHeight;
-      window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
-      const particles = Array.from({ length: 60 }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: Math.random() * 1.4 + 0.3,
-        dx: (Math.random() - 0.5) * 0.22, dy: (Math.random() - 0.5) * 0.22,
-        alpha: Math.random() * 0.35 + 0.05
-      }));
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => {
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`; ctx.fill();
-          p.x += p.dx; p.y += p.dy;
-          if (p.x < 0 || p.x > W) p.dx *= -1;
-          if (p.y < 0 || p.y > H) p.dy *= -1;
-        });
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 110) {
-              ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(255,255,255,${0.07*(1-dist/110)})`; ctx.lineWidth = 0.7; ctx.stroke();
-            }
-          }
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    })();
+    (function(){var canvas=document.getElementById('vd-bg-canvas'),ctx=canvas.getContext('2d'),W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight;window.addEventListener('resize',function(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;});var p=Array.from({length:60},function(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+0.3,dx:(Math.random()-0.5)*0.22,dy:(Math.random()-0.5)*0.22,alpha:Math.random()*0.35+0.05};});function draw(){ctx.clearRect(0,0,W,H);p.forEach(function(q){ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+q.alpha+')';ctx.fill();q.x+=q.dx;q.y+=q.dy;if(q.x<0||q.x>W)q.dx*=-1;if(q.y<0||q.y>H)q.dy*=-1;});for(var i=0;i<p.length;i++)for(var j=i+1;j<p.length;j++){var dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<110){ctx.beginPath();ctx.moveTo(p[i].x,p[i].y);ctx.lineTo(p[j].x,p[j].y);ctx.strokeStyle='rgba(255,255,255,'+(0.07*(1-dist/110))+')';ctx.lineWidth=0.7;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
     </script>
   </body>
 </html>
