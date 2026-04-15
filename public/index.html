@@ -1,20 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="./assets/images/icon.png" type="image/png" />
     <title>VirtualDesktopz</title>
     <link rel="stylesheet" href="./css/master.css" />
     <script src="/uv/uv.bundle.js" charset="UTF-8"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="./js/preload.js"></script>
+    <script src="./js/auth.js"></script>
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *, *::before, *::after { box-sizing: border-box; }
 
-      html, body { background: #000 !important; }
+      html, body {
+        background: #000 !important;
+        color: #fff;
+        font-family: 'Syne', sans-serif;
+        margin: 0; padding: 0;
+      }
 
       #vd-bg-canvas {
         position: fixed; inset: 0;
@@ -30,240 +36,200 @@
       }
       #vd-bg-vignette {
         position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.85) 90%);
+        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.88) 90%);
       }
-      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette):not(#password-overlay):not(#devtools-wall) {
+      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette):not(#vd-auth-overlay):not(#vd-devtools-wall) {
         position: relative; z-index: 1;
       }
 
+      /* ── NAV ── */
       nav {
-        background: rgba(0,0,0,0.6) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
+        background: rgba(0,0,0,0.65) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
         border-bottom: 1px solid rgba(255,255,255,0.07) !important;
-        z-index: 1 !important;
-        font-family: 'Inter', sans-serif;
+        display: flex; align-items: center;
+        padding: 0 24px; height: 58px; gap: 20px;
       }
-      nav .logo h1 { color: #fff !important; font-size: 15px !important; font-weight: 700 !important; }
-      nav .logo img { border-radius: 6px !important; }
-      nav #time { font-family: 'JetBrains Mono', monospace !important; color: rgba(255,255,255,0.3) !important; font-size: 12px !important; }
+      nav .logo { display: flex; align-items: center; gap: 10px; }
+      nav .logo img { width: 26px; height: 26px; border-radius: 7px; }
+      nav .logo h1 {
+        color: #fff !important; font-size: 15px !important;
+        font-weight: 800 !important; margin: 0; letter-spacing: -0.01em;
+      }
+      nav #time {
+        font-family: 'JetBrains Mono', monospace;
+        color: rgba(255,255,255,0.28); font-size: 12px;
+        margin: 0; margin-left: auto;
+      }
+      nav .navitems {
+        display: flex; align-items: center; gap: 2px;
+      }
       nav .navitem a {
-        color: rgba(255,255,255,0.45) !important; text-decoration: none !important;
-        font-family: 'Inter', sans-serif !important; font-weight: 600 !important;
-        font-size: 13px !important; padding: 6px 13px !important; border-radius: 8px !important;
-        transition: color 0.18s, background 0.18s !important; background: transparent !important; display: block !important;
+        color: rgba(255,255,255,0.45) !important;
+        text-decoration: none !important;
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 600 !important; font-size: 13px !important;
+        padding: 7px 14px !important; border-radius: 9px !important;
+        transition: color 0.18s, background 0.18s !important;
+        background: transparent !important; display: block !important;
+        letter-spacing: 0.01em;
       }
       nav .navitem a:hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
-      nav .navitem a[selected] { color: #000 !important; background: #fff !important; font-weight: 700 !important; }
-
-      .center-container {
-        position: static !important; left: auto !important; right: auto !important;
-        top: auto !important; bottom: auto !important; transform: none !important;
-        margin: 0 auto !important; display: flex !important; flex-direction: column !important;
-        align-items: center !important; justify-content: center !important;
-        min-height: 100vh !important; text-align: center !important;
-        padding: 40px 24px !important; width: 100% !important; max-width: 100% !important;
-        animation: pgFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.08s;
-        font-family: 'Inter', sans-serif;
+      nav .navitem a[selected] {
+        color: #000 !important; background: #fff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 0 20px rgba(255,255,255,0.18) !important;
       }
-      .center-container h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
-      .center-container h1 span { color: rgba(255,255,255,0.45); font-weight: 600; }
-      .button.play {
-        padding: 13px 30px; background: #fff; color: #000; border: none;
-        border-radius: 11px; font-family: 'Inter', sans-serif; font-size: 13px;
-        font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+
+      /* ── HOME HERO ── */
+      .hero {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        min-height: calc(100vh - 58px);
+        text-align: center; padding: 60px 24px;
+        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        animation-delay: 0.1s;
+      }
+      .hero-eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px; font-weight: 400;
+        color: rgba(255,255,255,0.3);
+        letter-spacing: 0.18em; text-transform: uppercase;
+        margin: 0 0 20px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .hero-eyebrow::before, .hero-eyebrow::after {
+        content: ''; width: 32px; height: 1px;
+        background: rgba(255,255,255,0.18);
+      }
+      .hero h1 {
+        font-size: clamp(40px, 6vw, 72px);
+        font-weight: 800; letter-spacing: -0.04em;
+        color: #fff; margin: 0 0 10px;
+        line-height: 1.05;
+        text-shadow: 0 0 60px rgba(255,255,255,0.12);
+      }
+      .hero h1 span {
+        color: rgba(255,255,255,0.28);
+        font-weight: 600;
+      }
+      .hero-sub {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px; color: rgba(255,255,255,0.38);
+        letter-spacing: 0.04em; line-height: 1.75;
+        max-width: 440px; margin: 0 auto 40px;
+      }
+      .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+      .btn-primary {
+        padding: 14px 32px;
+        background: #fff; color: #000;
+        border: none; border-radius: 12px;
+        font-family: 'Syne', sans-serif;
+        font-size: 13.5px; font-weight: 700;
+        letter-spacing: 0.07em; text-transform: uppercase;
         cursor: pointer; position: relative; overflow: hidden;
         transition: transform 0.15s, box-shadow 0.2s;
-        box-shadow: 0 0 22px rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.4);
-        margin: 6px 4px;
+        box-shadow: 0 0 24px rgba(255,255,255,0.14), 0 4px 20px rgba(0,0,0,0.4);
+        text-decoration: none; display: inline-block;
       }
-      .button.play:hover { transform: translateY(-2px); }
-      .button.play:active { transform: translateY(0); }
+      .btn-primary::before {
+        content: ''; position: absolute;
+        top: 0; left: -100%; width: 60%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
+        transform: skewX(-20deg);
+        transition: left 0.55s;
+      }
+      .btn-primary:hover::before { left: 160%; }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(255,255,255,0.22), 0 8px 28px rgba(0,0,0,0.5); }
+      .btn-primary:active { transform: translateY(0); }
 
-      .links { animation: pgFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.16s; }
+      .btn-ghost {
+        padding: 13px 28px;
+        background: transparent; color: rgba(255,255,255,0.6);
+        border: 1px solid rgba(255,255,255,0.16); border-radius: 12px;
+        font-family: 'Syne', sans-serif; font-size: 13.5px; font-weight: 600;
+        letter-spacing: 0.06em; cursor: pointer;
+        transition: border-color 0.2s, color 0.2s, background 0.2s;
+        text-decoration: none; display: inline-block;
+      }
+      .btn-ghost:hover { border-color: rgba(255,255,255,0.36); color: #fff; background: rgba(255,255,255,0.05); }
+
+      /* ── FEATURE ROW ── */
+      .feature-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        max-width: 800px;
+        margin: 56px auto 0;
+        padding: 0 24px;
+        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        animation-delay: 0.22s;
+      }
+      .feature-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        padding: 22px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.22s, border-color 0.22s, background 0.22s, box-shadow 0.22s;
+        text-decoration: none; display: block;
+      }
+      .feature-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.16);
+        background: rgba(255,255,255,0.05);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 24px rgba(255,255,255,0.04);
+      }
+      .feature-icon {
+        width: 42px; height: 42px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 14px;
+        font-size: 18px;
+      }
+      .feature-card h3 {
+        font-size: 14px; font-weight: 700;
+        color: #fff; margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .feature-card p {
+        font-size: 12px; color: rgba(255,255,255,0.35);
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.6; margin: 0;
+      }
+
+      /* ── LINKS ── */
+      .links {
+        display: flex; justify-content: space-between;
+        padding: 16px 28px;
+        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        animation-delay: 0.3s;
+      }
+      .links div { display: flex; gap: 20px; }
       .links a {
-        color: rgba(255,255,255,0.3) !important; font-family: 'JetBrains Mono', monospace;
-        font-size: 12px; letter-spacing: 0.05em; text-decoration: none; transition: color 0.2s;
+        color: rgba(255,255,255,0.22) !important;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11.5px; letter-spacing: 0.05em;
+        text-decoration: none; transition: color 0.2s;
       }
-      .links a:hover { color: rgba(255,255,255,0.7) !important; }
+      .links a:hover { color: rgba(255,255,255,0.65) !important; }
 
-      @keyframes pgFadeUp {
-        from { opacity: 0; transform: translateY(16px); }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
         to   { opacity: 1; transform: translateY(0); }
       }
-
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 99px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
-      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.25) transparent; }
-
-      #password-overlay {
-        position: fixed; inset: 0;
-        z-index: 2147483647;
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(6,5,4,0.97);
-        padding: 24px;
-        font-family: 'Inter', sans-serif;
-      }
-
-      .pw-card {
-        width: 100%; max-width: 400px;
-        background: #181714;
-        border: 1px solid rgba(255,255,255,0.09);
-        border-radius: 20px;
-        padding: 44px 40px 36px;
-        position: relative;
-        overflow: hidden;
-        animation: cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
-      }
-      @keyframes cardIn {
-        from { opacity: 0; transform: translateY(20px) scale(0.98); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      .pw-card::after {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 30%, rgba(255,255,255,0.14) 70%, transparent 100%);
-      }
-
-      .pw-brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
-      .pw-brand-mark {
-        width: 36px; height: 36px; border-radius: 9px;
-        background: #242220; border: 1px solid rgba(255,255,255,0.1);
-        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      }
-      .pw-brand-mark svg { width: 18px; height: 18px; opacity: 0.6; }
-      .pw-brand-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); }
-      .pw-badge {
-        margin-left: auto; font-family: 'JetBrains Mono', monospace;
-        font-size: 10px; color: rgba(255,255,255,0.22); letter-spacing: 0.08em;
-        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 5px; padding: 3px 8px;
-      }
-
-      .pw-heading { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.025em; margin-bottom: 6px; line-height: 1.2; }
-      .pw-subtext { font-size: 13.5px; color: rgba(255,255,255,0.32); margin-bottom: 28px; line-height: 1.5; }
-
-      .pw-field-label {
-        font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.3);
-        letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
-        font-family: 'JetBrains Mono', monospace;
-      }
-      .pw-input-row { position: relative; margin-bottom: 6px; }
-      #password-input {
-        width: 100%; height: 46px;
-        background: #0f0e0d; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-        padding: 0 44px 0 16px; font-size: 14px; font-family: 'JetBrains Mono', monospace;
-        color: #fff; outline: none; letter-spacing: 0.06em;
-        transition: border-color 0.18s, box-shadow 0.18s;
-      }
-      #password-input::placeholder { color: rgba(255,255,255,0.18); letter-spacing: 0.01em; font-size: 13px; }
-      #password-input:focus { border-color: rgba(255,255,255,0.28); box-shadow: 0 0 0 3px rgba(255,255,255,0.04); }
-
-      .pw-eye-btn {
-        position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-        background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.22);
-        padding: 4px; display: flex; transition: color 0.15s;
-      }
-      .pw-eye-btn:hover { color: rgba(255,255,255,0.5); }
-
-      .pw-error-row { height: 20px; margin-bottom: 16px; margin-top: 4px; }
-      .pw-error {
-        font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #e07070;
-        letter-spacing: 0.02em; opacity: 0; transition: opacity 0.2s;
-        display: flex; align-items: center; gap: 6px;
-      }
-      .pw-error.show { opacity: 1; }
-      .pw-error-dot { width: 5px; height: 5px; border-radius: 50%; background: #e07070; flex-shrink: 0; }
-
-      .pw-strength { display: flex; gap: 5px; margin-bottom: 20px; }
-      .pw-pip { height: 3px; flex: 1; border-radius: 2px; background: rgba(255,255,255,0.08); transition: background 0.2s; }
-      .pw-pip.s1 { background: #e07070; }
-      .pw-pip.s2 { background: #d4954a; }
-      .pw-pip.s3 { background: #7dbf7d; }
-      .pw-pip.s4 { background: #5fa85f; }
-
-      .pw-remember-row {
-        display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 20px;
-      }
-      .pw-remember-label {
-        font-size: 12px; color: rgba(255,255,255,0.35);
-        font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
-        user-select: none; cursor: pointer;
-      }
-      .pw-toggle-wrap { position: relative; width: 36px; height: 20px; cursor: pointer; }
-      .pw-toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
-      .pw-toggle-track {
-        position: absolute; inset: 0; border-radius: 20px;
-        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12);
-        transition: background 0.22s, border-color 0.22s;
-      }
-      .pw-toggle-thumb {
-        position: absolute; top: 3px; left: 3px;
-        width: 12px; height: 12px; border-radius: 50%;
-        background: rgba(255,255,255,0.35);
-        transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.22s;
-      }
-      .pw-toggle-wrap input:checked ~ .pw-toggle-track {
-        background: rgba(95,168,95,0.35); border-color: rgba(95,168,95,0.4);
-      }
-      .pw-toggle-wrap input:checked ~ .pw-toggle-thumb {
-        transform: translateX(16px); background: #7dbf7d;
-      }
-
-      #pw-submit {
-        width: 100%; height: 46px; background: #fff; color: #0f0e0d; border: none;
-        border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 13.5px;
-        font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
-        transition: background 0.15s, transform 0.1s, opacity 0.15s;
-      }
-      #pw-submit:hover { background: #e8e6e1; }
-      #pw-submit:active { transform: scale(0.99); }
-      #pw-submit.busy { opacity: 0.6; pointer-events: none; }
-
-      .pw-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 22px 0; }
-      .pw-footer-row { display: flex; align-items: center; justify-content: space-between; }
-      .pw-footer-left { font-size: 11.5px; color: rgba(255,255,255,0.18); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
-      .pw-lock-icon { display: flex; opacity: 0.25; }
-
-      .pw-success {
-        display: none; align-items: center; gap: 10px;
-        background: rgba(95,168,95,0.1); border: 1px solid rgba(95,168,95,0.22);
-        border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
-      }
-      .pw-success-dot { width: 8px; height: 8px; border-radius: 50%; background: #7dbf7d; flex-shrink: 0; }
-      .pw-success-text { font-size: 13px; color: #7dbf7d; font-weight: 500; }
-
-      @keyframes pwShake {
-        0%,100%{transform:translateX(0)}
-        15%{transform:translateX(-5px)} 30%{transform:translateX(5px)}
-        45%{transform:translateX(-4px)} 60%{transform:translateX(4px)}
-        75%{transform:translateX(-2px)} 90%{transform:translateX(2px)}
-      }
-      .pw-card.shake { animation: pwShake 0.38s ease both; }
-
-      #devtools-wall {
-        display: none; position: fixed; inset: 0; z-index: 2147483647;
-        background: #0f0e0d; align-items: center; justify-content: center;
-        flex-direction: column; gap: 12px; font-family: 'JetBrains Mono', monospace;
-        color: rgba(255,255,255,0.4); font-size: 13px; letter-spacing: 0.04em;
-      }
-      #devtools-wall svg { opacity: 0.3; margin-bottom: 8px; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 99px; }
+      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; }
     </style>
   </head>
-
   <body theme="main">
-
-    <div id="devtools-wall">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <span>Developer tools detected.</span>
-      <span style="color:rgba(255,255,255,0.18);font-size:11px">Close DevTools to continue.</span>
-    </div>
-
     <canvas id="vd-bg-canvas"></canvas>
     <div id="vd-bg-grid"></div>
     <div id="vd-bg-vignette"></div>
@@ -283,337 +249,87 @@
       </div>
     </nav>
 
-    <div class="center-container">
-      <h1>Welcome to <span>VirtualDesktopz made by serenitty</span></h1>
-      <br />
-      <button onclick="window.location.href='/search.html?q= 8rjfke'" class="button play">--</button>
-      <button onclick="launchab()" id="launchab" class="button play">Launch in about:blank</button>
+    <div class="hero">
+      <p class="hero-eyebrow">Welcome to</p>
+      <h1>VirtualDesktopz<br><span>by serenitty</span></h1>
+      <p class="hero-sub">Games, apps, search — all in one place.<br>Proxy-powered. Fast. Yours.</p>
+      <div class="hero-actions">
+        <a href="/search.html" class="btn-primary">Start Browsing</a>
+        <button onclick="launchab()" class="btn-ghost">Launch about:blank</button>
+      </div>
     </div>
 
-    <div class="links">
-      <div class="left">
+    <div class="feature-row">
+      <a href="/gs.html" class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>Games</h3>
+        <p>Hundreds of unblocked games</p>
+      </a>
+      <a href="/apps.html" class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Apps</h3>
+        <p>Web apps at your fingertips</p>
+      </a>
+      <a href="/emulator.html" class="feature-card">
+        <div class="feature-icon">🕹️</div>
+        <h3>Emulator</h3>
+        <p>Classic console emulation</p>
+      </a>
+      <a href="/search.html" class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Search</h3>
+        <p>Proxied browser search</p>
+      </a>
+    </div>
+
+    <div class="links" style="margin-top:40px;">
+      <div>
         <a href="https://www.google.com/search?q=orange+juice">cow-go-meow</a>
         <a href="https://www.google.com/search?q=orange+juice">cow-go-meow</a>
       </div>
-      <div class="right">
+      <div>
         <a href="./settings.html">Settings</a>
         <a href="./about.html">About</a>
       </div>
     </div>
 
-    <div id="password-overlay">
-      <div class="pw-card" id="pw-card">
-        <div class="pw-brand-row">
-          <div class="pw-brand-mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-            </svg>
-          </div>
-          <span class="pw-brand-name">VirtualDesktopz</span>
-          <span class="pw-badge">PREMIUM</span>
-        </div>
-
-        <h2 class="pw-heading">Sign in to continue</h2>
-        <p class="pw-subtext">Your session requires authentication.<br>Enter your password below.</p>
-
-        <div class="pw-success" id="pw-success">
-          <div class="pw-success-dot"></div>
-          <span class="pw-success-text">Access granted — welcome back.</span>
-        </div>
-
-        <div id="pw-form">
-          <p class="pw-field-label">Password</p>
-          <div class="pw-input-row">
-            <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password" autofocus>
-            <button class="pw-eye-btn" id="pw-eye" tabindex="-1" aria-label="Toggle visibility">
-              <svg id="eye-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-          <div class="pw-error-row">
-            <div class="pw-error" id="pw-error">
-              <span class="pw-error-dot"></span>
-              <span>Incorrect password — try again</span>
-            </div>
-          </div>
-          <div class="pw-strength">
-            <div class="pw-pip" id="pp1"></div>
-            <div class="pw-pip" id="pp2"></div>
-            <div class="pw-pip" id="pp3"></div>
-            <div class="pw-pip" id="pp4"></div>
-          </div>
-          <div class="pw-remember-row">
-            <span class="pw-remember-label" id="pw-rem-label">Remember me</span>
-            <label class="pw-toggle-wrap" id="pw-rem-wrap">
-              <input type="checkbox" id="pw-remember">
-              <div class="pw-toggle-track"></div>
-              <div class="pw-toggle-thumb"></div>
-            </label>
-          </div>
-          <button id="pw-submit">Unlock</button>
-        </div>
-
-        <div class="pw-divider"></div>
-        <div class="pw-footer-row">
-          <span class="pw-footer-left">protected · serenitty</span>
-          <div class="pw-lock-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <script src="./js/index.js"></script>
+    <script type="text/javascript">
+      aclib.runAutoTag({ zoneId: '6hmeyutild' });
+    </script>
+    <script>
+    (function() {
+      var canvas = document.getElementById('vd-bg-canvas');
+      var ctx = canvas.getContext('2d');
+      var W = canvas.width = window.innerWidth;
+      var H = canvas.height = window.innerHeight;
+      window.addEventListener('resize', function(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+      var particles = Array.from({length:60}, function(){ return {
+        x:Math.random()*W, y:Math.random()*H,
+        r:Math.random()*1.4+0.3,
+        dx:(Math.random()-0.5)*0.22, dy:(Math.random()-0.5)*0.22,
+        alpha:Math.random()*0.35+0.05
+      }; });
+      function draw() {
+        ctx.clearRect(0,0,W,H);
+        particles.forEach(function(p){
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,'+p.alpha+')'; ctx.fill();
+          p.x+=p.dx; p.y+=p.dy;
+          if(p.x<0||p.x>W) p.dx*=-1; if(p.y<0||p.y>H) p.dy*=-1;
+        });
+        for(var i=0;i<particles.length;i++) for(var j=i+1;j<particles.length;j++){
+          var dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+          var dist=Math.sqrt(dx*dx+dy*dy);
+          if(dist<110){
+            ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y);
+            ctx.strokeStyle='rgba(255,255,255,'+(0.07*(1-dist/110))+')'; ctx.lineWidth=0.7; ctx.stroke();
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+    </script>
   </body>
-
-  <script src="./js/index.js"></script>
-  <script type="text/javascript" async>
-    aclib.runAutoTag({ zoneId: '6hmeyutild' });
-  </script>
-
-  <script>
-  (function() {
-    var canvas = document.getElementById('vd-bg-canvas');
-    var ctx = canvas.getContext('2d');
-    var W = canvas.width = window.innerWidth;
-    var H = canvas.height = window.innerHeight;
-    window.addEventListener('resize', function() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
-    var particles = Array.from({ length: 60 }, function() { return {
-      x: Math.random() * W, y: Math.random() * H,
-      r: Math.random() * 1.4 + 0.3,
-      dx: (Math.random() - 0.5) * 0.22, dy: (Math.random() - 0.5) * 0.22,
-      alpha: Math.random() * 0.35 + 0.05
-    }; });
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(function(p) {
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,' + p.alpha + ')'; ctx.fill();
-        p.x += p.dx; p.y += p.dy;
-        if (p.x < 0 || p.x > W) p.dx *= -1;
-        if (p.y < 0 || p.y > H) p.dy *= -1;
-      });
-      for (var i = 0; i < particles.length; i++) {
-        for (var j = i + 1; j < particles.length; j++) {
-          var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-          var dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < 110) {
-            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(255,255,255,' + (0.07*(1-dist/110)) + ')'; ctx.lineWidth = 0.7; ctx.stroke();
-          }
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-    draw();
-  })();
-  </script>
-
-  <script>
-  (function() {
-    'use strict';
-
-    var _k = ['s','e','r','e','n','i','t','t','y','p','r','e','m','i','u','m'].join('');
-    var _salt = 'vd_s9x2z_bf3k';
-    var _unlocked = false;
-
-    var overlay    = document.getElementById('password-overlay');
-    var card       = document.getElementById('pw-card');
-    var input      = document.getElementById('password-input');
-    var eyeBtn     = document.getElementById('pw-eye');
-    var eyeSvg     = document.getElementById('eye-svg');
-    var errEl      = document.getElementById('pw-error');
-    var submitBtn  = document.getElementById('pw-submit');
-    var pips       = ['pp1','pp2','pp3','pp4'].map(function(id) { return document.getElementById(id); });
-    var successEl  = document.getElementById('pw-success');
-    var formEl     = document.getElementById('pw-form');
-    var devWall    = document.getElementById('devtools-wall');
-    var rememberCb = document.getElementById('pw-remember');
-    var remLabel   = document.getElementById('pw-rem-label');
-    var remWrap    = document.getElementById('pw-rem-wrap');
-
-    remLabel.addEventListener('click', function() {
-      rememberCb.checked = !rememberCb.checked;
-    });
-
-    async function hashValue(val) {
-      var enc = new TextEncoder();
-      var buf = await crypto.subtle.digest('SHA-256', enc.encode(_salt + val));
-      return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
-    }
-
-    async function checkRemembered() {
-      try {
-        var stored = localStorage.getItem('vd_auth_tok');
-        if (!stored) return;
-        var expected = await hashValue(_k);
-        if (stored === expected) {
-          grantAccess(false);
-        }
-      } catch(e) {}
-    }
-
-    checkRemembered();
-
-    var eyeOpen   = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    var eyeClosed = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
-
-    eyeBtn.addEventListener('click', function() {
-      var show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      eyeSvg.innerHTML = show ? eyeClosed : eyeOpen;
-      input.focus();
-    });
-
-    input.addEventListener('input', function() {
-      errEl.classList.remove('show');
-      var len = input.value.length;
-      var s = len === 0 ? 0 : len < 5 ? 1 : len < 10 ? 2 : len < 16 ? 3 : 4;
-      var cls = ['','s1','s2','s3','s4'];
-      pips.forEach(function(p, i) { p.className = 'pw-pip'; if (i < s) p.classList.add(cls[s]); });
-    });
-
-    function shake() {
-      card.classList.remove('shake');
-      void card.offsetWidth;
-      card.classList.add('shake');
-    }
-
-    function grantAccess(doRemember) {
-      _unlocked = true;
-      successEl.style.display = 'flex';
-      formEl.style.display = 'none';
-      document.body.style.pointerEvents = '';
-      setTimeout(function() {
-        overlay.style.transition = 'opacity 0.5s ease';
-        overlay.style.opacity = '0';
-        setTimeout(function() { overlay.style.display = 'none'; }, 520);
-      }, 700);
-      if (doRemember) {
-        hashValue(_k).then(function(h) {
-          try { localStorage.setItem('vd_auth_tok', h); } catch(e) {}
-        });
-      }
-    }
-
-    function check() {
-      if (!input.value.trim()) { input.focus(); return; }
-      submitBtn.classList.add('busy');
-      submitBtn.textContent = 'Verifying\u2026';
-      var remember = rememberCb.checked;
-      setTimeout(function() {
-        if (input.value === _k) {
-          grantAccess(remember);
-        } else {
-          submitBtn.classList.remove('busy');
-          submitBtn.textContent = 'Unlock';
-          errEl.classList.add('show');
-          shake();
-          input.value = '';
-          pips.forEach(function(p) { p.className = 'pw-pip'; });
-          input.focus();
-        }
-      }, 500);
-    }
-
-    submitBtn.addEventListener('click', check);
-    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') check(); });
-
-    function enforceOverlay() {
-      if (_unlocked) return;
-      if (!document.getElementById('password-overlay')) {
-        document.documentElement.appendChild(overlay);
-      }
-      var s = overlay.style;
-      if (s.display === 'none') s.display = 'flex';
-      if (s.visibility === 'hidden') s.visibility = 'visible';
-      if (parseFloat(s.opacity) < 0.5 && s.opacity !== '') s.opacity = '1';
-      if (parseInt(s.zIndex) < 2147483640) s.zIndex = '2147483647';
-      document.body.style.pointerEvents = 'none';
-      overlay.style.pointerEvents = 'all';
-    }
-    setInterval(enforceOverlay, 80);
-
-    var domObserver = new MutationObserver(function(mutations) {
-      if (_unlocked) return;
-      mutations.forEach(function(m) {
-        if (m.type === 'childList') {
-          m.removedNodes.forEach(function(node) {
-            if (node === overlay || (node.contains && node.contains(overlay))) {
-              document.documentElement.appendChild(overlay);
-            }
-          });
-        }
-        if (m.type === 'attributes') {
-          var t = m.target;
-          if (t === overlay || overlay.contains(t)) enforceOverlay();
-        }
-      });
-    });
-    domObserver.observe(document.documentElement, {
-      childList: true, subtree: true,
-      attributes: true, attributeFilter: ['style','class','hidden','id']
-    });
-
-    var headObserver = new MutationObserver(function(mutations) {
-      if (_unlocked) return;
-      mutations.forEach(function(m) {
-        m.addedNodes.forEach(function(node) {
-          if (node.tagName === 'STYLE' || node.tagName === 'LINK') {
-            try { node.parentNode.removeChild(node); } catch(e) {}
-          }
-        });
-      });
-    });
-    headObserver.observe(document.head, { childList: true });
-
-    document.addEventListener('contextmenu', function(e) {
-      if (!_unlocked) e.preventDefault();
-    });
-
-    document.addEventListener('keydown', function(e) {
-      if (_unlocked) return;
-      var devKeys = (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && 'IJCK'.indexOf(e.key) !== -1) ||
-        (e.metaKey && e.altKey  && 'IJC'.indexOf(e.key) !== -1) ||
-        (e.ctrlKey && e.key === 'U') ||
-        (e.ctrlKey && e.key === 'S')
-      );
-      if (devKeys) e.preventDefault();
-    });
-
-    var _dtInterval = setInterval(function() {
-      if (_unlocked) { clearInterval(_dtInterval); devWall.style.display = 'none'; return; }
-      var wGap = window.outerWidth  - window.innerWidth;
-      var hGap = window.outerHeight - window.innerHeight;
-      var open = wGap > 160 || hGap > 160;
-      devWall.style.display = open ? 'flex' : 'none';
-      if (open) enforceOverlay();
-    }, 500);
-
-    overlay.addEventListener('selectstart', function(e) { e.preventDefault(); });
-    overlay.addEventListener('dragstart',   function(e) { e.preventDefault(); });
-
-    var _origRemove = Element.prototype.remove;
-    Element.prototype.remove = function() {
-      if (!_unlocked && this === overlay) { return; }
-      return _origRemove.apply(this, arguments);
-    };
-
-    var _origSetAttr = Element.prototype.setAttribute;
-    Element.prototype.setAttribute = function(name, value) {
-      if (!_unlocked && this === overlay && name === 'style') {
-        return;
-      }
-      return _origSetAttr.apply(this, arguments);
-    };
-
-    input.focus();
-
-  })();
-  </script>
-
 </html>
