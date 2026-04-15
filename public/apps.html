@@ -1,175 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="./assets/images/icon.png" type="image/png" />
-    <title>VirtualDesktopz</title>
+    <title>VirtualDesktopz — Apps</title>
     <link rel="stylesheet" href="./css/master.css" />
     <script src="/uv/uv.bundle.js" charset="UTF-8"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="./js/preload.js"></script>
+    <script src="./js/auth.js"></script>
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
+      html, body { background: #000 !important; color: #fff; font-family: 'Syne', sans-serif; margin: 0; padding: 0; }
+      #vd-bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.55; }
+      #vd-bg-grid { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 48px 48px; }
+      #vd-bg-vignette { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.88) 90%); }
+      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette):not(#vd-auth-overlay):not(#vd-devtools-wall) { position: relative; z-index: 1; }
 
-      html, body {
-        background: #000 !important;
-        color: #fff;
-        font-family: 'Syne', sans-serif;
-      }
+      nav { background: rgba(0,0,0,0.65) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; display: flex; align-items: center; padding: 0 24px; height: 58px; gap: 20px; }
+      nav .logo { display: flex; align-items: center; gap: 10px; }
+      nav .logo img { width: 26px; height: 26px; border-radius: 7px; }
+      nav .logo h1 { color: #fff !important; font-size: 15px !important; font-weight: 800 !important; margin: 0; }
+      nav #time { font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.28); font-size: 12px; margin: 0; margin-left: auto; }
+      nav .navitems { display: flex; align-items: center; gap: 2px; }
+      nav .navitem a { color: rgba(255,255,255,0.45) !important; text-decoration: none !important; font-family: 'Syne', sans-serif !important; font-weight: 600 !important; font-size: 13px !important; padding: 7px 14px !important; border-radius: 9px !important; transition: color 0.18s, background 0.18s !important; background: transparent !important; display: block !important; }
+      nav .navitem a:hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
+      nav .navitem a[selected] { color: #000 !important; background: #fff !important; font-weight: 700 !important; box-shadow: 0 0 20px rgba(255,255,255,0.18) !important; }
 
-      #vd-bg-canvas {
-        position: fixed; inset: 0;
-        width: 100%; height: 100%;
-        z-index: 0; pointer-events: none; opacity: 0.55;
-      }
-      #vd-bg-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image:
-          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-        background-size: 48px 48px;
-      }
-      #vd-bg-vignette {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.85) 90%);
-      }
-      body > *:not(#vd-bg-canvas):not(#vd-bg-grid):not(#vd-bg-vignette) {
-        position: relative; z-index: 1;
-      }
+      .page-header { text-align: center; padding: 48px 24px 16px; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+      .page-header h1 { font-size: clamp(36px,5vw,56px); font-weight: 800; letter-spacing: -0.04em; color: #fff; margin: 0 0 8px; text-shadow: 0 0 50px rgba(255,255,255,0.1); }
+      .page-header p { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: rgba(255,255,255,0.3); margin: 0; letter-spacing: 0.04em; }
 
-      h1 {
-        font-size: 42px;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        color: #fff;
-        text-shadow: 0 0 40px rgba(255,255,255,0.15);
-        text-align: center;
-        margin: 32px 0 18px;
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-      }
-
-      .input {
-        display: block;
-        margin: 0 auto 28px;
-        padding: 13px 20px;
-        width: min(400px, 90%);
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
-        color: #fff;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        letter-spacing: 0.04em;
-        outline: none;
-        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.08s;
-      }
+      .search-wrap { display: flex; justify-content: center; padding: 24px 24px 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.08s; }
+      .input { width: min(440px,100%); padding: 13px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.04em; outline: none; text-align: center; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; }
       .input::placeholder { color: rgba(255,255,255,0.2); }
-      .input:focus {
-        border-color: rgba(255,255,255,0.3);
-        background: rgba(255,255,255,0.08);
-        box-shadow: 0 0 20px rgba(255,255,255,0.05);
-      }
+      .input:focus { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); box-shadow: 0 0 20px rgba(255,255,255,0.05); }
 
-      .cardgroup {
-        animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-        animation-delay: 0.14s;
-      }
+      .cardgroup { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; padding: 24px; max-width: 1200px; margin: 0 auto; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.14s; }
+      .card { background: rgba(255,255,255,0.04) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 14px !important; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important; overflow: hidden; cursor: pointer; }
+      .card:hover { transform: translateY(-4px) !important; border-color: rgba(255,255,255,0.18) !important; box-shadow: 0 12px 36px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.04) !important; }
+      .card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+      .card h4 { font-size: 13px; font-weight: 700; color: #fff; padding: 12px 14px 14px; margin: 0; }
 
-      .card {
-        background: rgba(255,255,255,0.04) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 14px !important;
-        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important;
-      }
-      .card:hover {
-        transform: translateY(-3px) !important;
-        border-color: rgba(255,255,255,0.18) !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.04) !important;
-      }
+      button.secondary { display: block; margin: 8px auto 32px; padding: 11px 28px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: rgba(255,255,255,0.45); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+      button.secondary:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.9); }
 
-      button.secondary {
-        display: block;
-        margin: 24px auto;
-        padding: 11px 28px;
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 10px;
-        color: rgba(255,255,255,0.5);
-        font-family: 'Syne', sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: border-color 0.2s, color 0.2s;
-      }
-      button.secondary:hover {
-        border-color: rgba(255,255,255,0.35);
-        color: rgba(255,255,255,0.9);
-      }
-
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(18px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-    
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 99px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
-      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.25) transparent; }
-
-      nav {
-        background: rgba(0,0,0,0.6) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-bottom: 1px solid rgba(255,255,255,0.07) !important;
-      }
-
-      nav .logo h1 {
-        color: #fff !important;
-        font-size: 15px !important;
-        font-weight: 800 !important;
-      }
-
-      nav .logo img {
-        border-radius: 6px !important;
-      }
-
-      nav #time {
-        font-family: 'JetBrains Mono', monospace !important;
-        color: rgba(255,255,255,0.3) !important;
-        font-size: 12px !important;
-      }
-
-      nav .navitem a {
-        color: rgba(255,255,255,0.45) !important;
-        text-decoration: none !important;
-        font-family: 'Syne', sans-serif !important;
-        font-weight: 600 !important;
-        font-size: 13px !important;
-        padding: 6px 13px !important;
-        border-radius: 8px !important;
-        transition: color 0.18s, background 0.18s !important;
-        background: transparent !important;
-        display: block !important;
-      }
-
-      nav .navitem a:hover {
-        color: #fff !important;
-        background: rgba(255,255,255,0.08) !important;
-      }
-
-      nav .navitem a[selected] {
-        color: #000 !important;
-        background: #fff !important;
-        font-weight: 700 !important;
-        box-shadow: 0 0 18px rgba(255,255,255,0.2) !important;
-      }
-
+      @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+      ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:99px;}
+      * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; }
     </style>
   </head>
   <body>
@@ -192,67 +73,34 @@
       </div>
     </nav>
 
-    <h1>Apps</h1>
-    <input type="text" class="input" id="search" placeholder="Search Apps" style="text-align: center" />
+    <div class="page-header">
+      <h1>Apps</h1>
+      <p>Productivity & tools, unfiltered.</p>
+    </div>
+
+    <div class="search-wrap">
+      <input type="text" class="input" id="search" placeholder="Search apps…" />
+    </div>
+
     <div class="cardgroup" id="appcards"></div>
     <button class="secondary" onclick="clearcustomapps()">Clear custom apps</button>
 
     <script src="./js/index.js"></script>
     <script src="./assets/data/apps.js"></script>
     <script src="./js/apps.js"></script>
-
     <script>
-      const searchInput = document.querySelector('#search');
-      const items = document.querySelectorAll('.card');
-      searchInput.addEventListener('input', function(event) {
-        const query = event.target.value.toLowerCase();
-        items.forEach(function(item) {
-          const title = item.querySelector('.card h4').textContent.toLowerCase();
-          item.style.display = title.includes(query) ? 'block' : 'none';
+      var searchInput = document.querySelector('#search');
+      searchInput.addEventListener('input', function(e) {
+        var q = e.target.value.toLowerCase();
+        document.querySelectorAll('.card').forEach(function(item) {
+          var t = item.querySelector('h4');
+          if(t) item.style.display = t.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
       });
     </script>
-
-    <script type="text/javascript">
-      aclib.runAutoTag({ zoneId: '6hmeyutild' });
-    </script>
-
+    <script type="text/javascript"> aclib.runAutoTag({ zoneId: '6hmeyutild' }); </script>
     <script>
-    (function() {
-      const canvas = document.getElementById('vd-bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let W = canvas.width = window.innerWidth;
-      let H = canvas.height = window.innerHeight;
-      window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
-      const particles = Array.from({ length: 60 }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: Math.random() * 1.4 + 0.3,
-        dx: (Math.random() - 0.5) * 0.22, dy: (Math.random() - 0.5) * 0.22,
-        alpha: Math.random() * 0.35 + 0.05
-      }));
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => {
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`; ctx.fill();
-          p.x += p.dx; p.y += p.dy;
-          if (p.x < 0 || p.x > W) p.dx *= -1;
-          if (p.y < 0 || p.y > H) p.dy *= -1;
-        });
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 110) {
-              ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(255,255,255,${0.07*(1-dist/110)})`; ctx.lineWidth = 0.7; ctx.stroke();
-            }
-          }
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    })();
+    (function(){var canvas=document.getElementById('vd-bg-canvas'),ctx=canvas.getContext('2d'),W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight;window.addEventListener('resize',function(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;});var p=Array.from({length:60},function(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+0.3,dx:(Math.random()-0.5)*0.22,dy:(Math.random()-0.5)*0.22,alpha:Math.random()*0.35+0.05};});function draw(){ctx.clearRect(0,0,W,H);p.forEach(function(q){ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+q.alpha+')';ctx.fill();q.x+=q.dx;q.y+=q.dy;if(q.x<0||q.x>W)q.dx*=-1;if(q.y<0||q.y>H)q.dy*=-1;});for(var i=0;i<p.length;i++)for(var j=i+1;j<p.length;j++){var dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<110){ctx.beginPath();ctx.moveTo(p[i].x,p[i].y);ctx.lineTo(p[j].x,p[j].y);ctx.strokeStyle='rgba(255,255,255,'+(0.07*(1-dist/110))+')';ctx.lineWidth=0.7;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
     </script>
   </body>
 </html>
