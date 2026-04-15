@@ -103,63 +103,77 @@
         position: fixed; inset: 0;
         z-index: 2147483647;
         display: flex; align-items: center; justify-content: center;
-        background: rgba(6,5,4,0.97);
+        background: rgba(0, 0, 0, 0.98);
         padding: 24px;
         font-family: 'Inter', sans-serif;
       }
 
       .pw-card {
         width: 100%; max-width: 400px;
-        background: #181714;
-        border: 1px solid rgba(255,255,255,0.09);
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.07);
         border-radius: 20px;
         padding: 44px 40px 36px;
         position: relative;
         overflow: hidden;
         animation: cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
       }
+
       @keyframes cardIn {
         from { opacity: 0; transform: translateY(20px) scale(0.98); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
       }
+
       .pw-card::after {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 30%, rgba(255,255,255,0.14) 70%, transparent 100%);
+        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.10) 70%, transparent 100%);
       }
 
       .pw-brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
       .pw-brand-mark {
         width: 36px; height: 36px; border-radius: 9px;
-        background: #242220; border: 1px solid rgba(255,255,255,0.1);
+        background: #111111;
+        border: 1px solid rgba(255,255,255,0.06);
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       }
-      .pw-brand-mark svg { width: 18px; height: 18px; opacity: 0.6; }
+      .pw-brand-mark svg { width: 18px; height: 18px; opacity: 0.65; }
       .pw-brand-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); }
       .pw-badge {
         margin-left: auto; font-family: 'JetBrains Mono', monospace;
         font-size: 10px; color: rgba(255,255,255,0.22); letter-spacing: 0.08em;
-        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
         border-radius: 5px; padding: 3px 8px;
       }
 
       .pw-heading { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.025em; margin-bottom: 6px; line-height: 1.2; }
-      .pw-subtext { font-size: 13.5px; color: rgba(255,255,255,0.32); margin-bottom: 28px; line-height: 1.5; }
+      .pw-subtext { font-size: 13.5px; color: rgba(255,255,255,0.34); margin-bottom: 28px; line-height: 1.5; }
 
       .pw-field-label {
-        font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.3);
+        font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.32);
         letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
         font-family: 'JetBrains Mono', monospace;
       }
+
       .pw-input-row { position: relative; margin-bottom: 6px; }
       #password-input {
         width: 100%; height: 46px;
-        background: #0f0e0d; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-        padding: 0 44px 0 16px; font-size: 14px; font-family: 'JetBrains Mono', monospace;
-        color: #fff; outline: none; letter-spacing: 0.06em;
+        background: #111111;
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 12px;
+        padding: 0 44px 0 16px;
+        font-size: 14px;
+        font-family: 'JetBrains Mono', monospace;
+        color: #fff;
+        outline: none;
+        letter-spacing: 0.06em;
         transition: border-color 0.18s, box-shadow 0.18s;
       }
       #password-input::placeholder { color: rgba(255,255,255,0.18); letter-spacing: 0.01em; font-size: 13px; }
-      #password-input:focus { border-color: rgba(255,255,255,0.28); box-shadow: 0 0 0 3px rgba(255,255,255,0.04); }
+      #password-input:focus { 
+        border-color: rgba(255,255,255,0.22); 
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.025); 
+      }
 
       .pw-eye-btn {
         position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
@@ -178,7 +192,7 @@
       .pw-error-dot { width: 5px; height: 5px; border-radius: 50%; background: #e07070; flex-shrink: 0; }
 
       .pw-strength { display: flex; gap: 5px; margin-bottom: 20px; }
-      .pw-pip { height: 3px; flex: 1; border-radius: 2px; background: rgba(255,255,255,0.08); transition: background 0.2s; }
+      .pw-pip { height: 3px; flex: 1; border-radius: 2px; background: rgba(255,255,255,0.06); transition: background 0.2s; }
       .pw-pip.s1 { background: #e07070; }
       .pw-pip.s2 { background: #d4954a; }
       .pw-pip.s3 { background: #7dbf7d; }
@@ -189,7 +203,7 @@
         margin-bottom: 20px;
       }
       .pw-remember-label {
-        font-size: 12px; color: rgba(255,255,255,0.35);
+        font-size: 12px; color: rgba(255,255,255,0.36);
         font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
         user-select: none; cursor: pointer;
       }
@@ -197,24 +211,24 @@
       .pw-toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
       .pw-toggle-track {
         position: absolute; inset: 0; border-radius: 20px;
-        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09);
         transition: background 0.22s, border-color 0.22s;
       }
       .pw-toggle-thumb {
         position: absolute; top: 3px; left: 3px;
         width: 12px; height: 12px; border-radius: 50%;
-        background: rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.38);
         transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.22s;
       }
       .pw-toggle-wrap input:checked ~ .pw-toggle-track {
-        background: rgba(95,168,95,0.35); border-color: rgba(95,168,95,0.4);
+        background: rgba(95,168,95,0.3); border-color: rgba(95,168,95,0.35);
       }
       .pw-toggle-wrap input:checked ~ .pw-toggle-thumb {
         transform: translateX(16px); background: #7dbf7d;
       }
 
       #pw-submit {
-        width: 100%; height: 46px; background: #fff; color: #0f0e0d; border: none;
+        width: 100%; height: 46px; background: #fff; color: #0a0a0a; border: none;
         border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 13.5px;
         font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
         transition: background 0.15s, transform 0.1s, opacity 0.15s;
@@ -223,14 +237,14 @@
       #pw-submit:active { transform: scale(0.99); }
       #pw-submit.busy { opacity: 0.6; pointer-events: none; }
 
-      .pw-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 22px 0; }
+      .pw-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 22px 0; }
       .pw-footer-row { display: flex; align-items: center; justify-content: space-between; }
-      .pw-footer-left { font-size: 11.5px; color: rgba(255,255,255,0.18); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
-      .pw-lock-icon { display: flex; opacity: 0.25; }
+      .pw-footer-left { font-size: 11.5px; color: rgba(255,255,255,0.20); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+      .pw-lock-icon { display: flex; opacity: 0.28; }
 
       .pw-success {
         display: none; align-items: center; gap: 10px;
-        background: rgba(95,168,95,0.1); border: 1px solid rgba(95,168,95,0.22);
+        background: rgba(95,168,95,0.08); border: 1px solid rgba(95,168,95,0.20);
         border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
       }
       .pw-success-dot { width: 8px; height: 8px; border-radius: 50%; background: #7dbf7d; flex-shrink: 0; }
@@ -246,7 +260,7 @@
 
       #devtools-wall {
         display: none; position: fixed; inset: 0; z-index: 2147483647;
-        background: #0f0e0d; align-items: center; justify-content: center;
+        background: #0a0a0a; align-items: center; justify-content: center;
         flex-direction: column; gap: 12px; font-family: 'JetBrains Mono', monospace;
         color: rgba(255,255,255,0.4); font-size: 13px; letter-spacing: 0.04em;
       }
