@@ -238,6 +238,18 @@ var games = [
     title: "Baldi's Basics",
     url: 'https://clinquant-muffin-a08c48.netlify.app/',
     image: 'https://upload.wikimedia.org/wikipedia/en/1/13/Baldis_Basics_in_Education_and_Learining_cover_art.webp'
+  },
+  {
+    id: 'lolshotio',
+    title: 'LOLShot.io',
+    url: 'https://lolshot.io/',
+    image: 'https://cdn-1.webcatalog.io/catalog/lolshot-io/lolshot-io-icon-filled-256.png?v=1714779929067'
+  },
+  {
+    id: 'cookieclicker',
+    title: 'Cookie Clicker',
+    url: 'https://comforting-vacherin-a3a944.netlify.app/',
+    image: 'https://play-lh.googleusercontent.com/Z1MOuuiD05ZN5LkVmMEvKF0mqAc-FknaQ2j8s4dZiO-LSPQX4EEA3RVJdlQEtxe96ok'
   }
 ]
 games.sort(function (a, b) {
